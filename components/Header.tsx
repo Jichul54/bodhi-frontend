@@ -5,6 +5,7 @@ const Header: React.FC = () => {
     <header>
       <div className="header-box">
         <h1>Design thinking engineering project Group: 5</h1>
+        <p> </p>
       </div>
       <div className="top-box">
         <h2>Bodhi</h2>
