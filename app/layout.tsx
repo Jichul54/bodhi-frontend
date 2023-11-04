@@ -13,8 +13,25 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html>
-      <body>{children}</body>
-    </html>
+  <html>
+
+    <body>
+      <header>
+          <div class="header-box">
+            <h1>Design thinking engineering project Group: 5 </h1>
+            <p> </p>
+          </div>
+          <div class="top-box">
+              <h2>Bodhi</h2>
+          </div>
+      </header>
+          <div class="middle-box">
+            <h2>Camera</h2>
+            <p> </p>
+        </div>
+        <button id="camera-button"></button>
+    </body>
+    
+  </html>
   )
 }

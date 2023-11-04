@@ -1,0 +1,70 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-image: linear-gradient(to bottom, #3498db, #2657a6);
+        /* 남색 그라데이션 배경 이미지 설정 */
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    position: relative;
+}
+
+.header-box {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.top-box {
+    background-color: #f0f0f0;
+    padding: 20px;
+    color: black;
+}
+
+h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+h2 {
+    font-size: 20px;
+    margin: 0;
+}
+
+p {
+    font-size: 16px;
+}
+
+.middle-box {
+    border: 2px solid #000;
+    /* 테두리 스타일 및 색상 설정 */
+    padding: 20px;
+    /* 내용 주변 여백 추가 */
+    text-align: center;
+    /* 텍스트 가운데 정렬 */
+    margin: 20px auto;
+    /* 중앙 정렬 */
+}
+
+.camera-button {
+    background-color: #3498db;
+    /* 버튼 배경 색상 설정 */
+    color: #fff;
+    /* 버튼 텍스트 색상 설정 */
+    border: none;
+    /* 테두리 제거 */
+    padding: 20px 40px;
+    /* 내부 여백 설정 */
+    cursor: pointer;
+    /* 커서 스타일을 손가락 모양으로 변경하여 클릭 가능하게 함 */
+    border-radius: 5px;
+    /* 버튼 모서리를 둥글게 만듦 */
+}
+
+.camera-button:hover {
+    background-color: #2657a6;
+    /* 마우스 호버(위에 올렸을 때)시 배경 색상 변경 */
+}
