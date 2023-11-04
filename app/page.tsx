@@ -1,65 +1,76 @@
 "use client";
-import React, { useRef, useCallback, useState } from "react";
+import React, { useRef, useCallback, useState, useEffect } from "react";
 
 const Camera: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isAnalysing, setIsAnalysing] = useState(false);
   const [cameraStarted, setCameraStarted] = useState(false);
+  // Todo: coordinates와 movingAvgValues의 메모리 관리
+  // 축적된 값은 필요 없으므로 메모리에서 제거해야 합니다
+  // 기존 이동평균값과 새로운 이동평균값만 필요합니다
   const [coordinates, setCoordinates] = useState({});
   const [movingAvgValues, setMovingAvgValues] = useState({});
 
- const analysePosture = async () => {
-   setIsAnalysing(true);
+  // 상태 업데이트 후에 실행되는 useEffect
+  useEffect(() => {
+    console.log(coordinates, movingAvgValues);
+  }, [coordinates, movingAvgValues]);
 
-   // 웹캠 이미지 캡처
-   if (videoRef.current) {
-     const canvas = document.createElement("canvas");
-     canvas.width = videoRef.current.videoWidth;
-     canvas.height = videoRef.current.videoHeight;
-     const context = canvas.getContext("2d");
+  const analysePosture = async () => {
+    setIsAnalysing(true);
 
-     context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    // 웹캠 이미지 캡처
+    if (videoRef.current) {
+      const canvas = document.createElement("canvas");
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const context = canvas.getContext("2d");
 
-     canvas.toBlob(async (blob) => {
-       // FormData를 사용해 파일과 데이터를 서버로 전송합니다
-       const formData = new FormData();
-       formData.append("file", blob, "frame.jpg");
-       // coordinates와 moving_avg_values를 JSON 문자열로 변환하여 formData에 추가합니다
-       formData.append(
-         "data",
-         JSON.stringify({
-           coordinates: coordinates,
-           moving_avg_values: movingAvgValues,
-         })
-       );
+      context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-       try {
-         // 서버에 이미지 전송
-         const response = await fetch("http://localhost:8000/analyze_posture", {
-           method: "POST",
-           body: formData,
-         });
+      canvas.toBlob(async (blob) => {
+        // FormData를 사용해 파일과 데이터를 서버로 전송합니다
+        const formData = new FormData();
+        formData.append("file", blob, "frame.jpg");
+        // coordinates와 moving_avg_values를 JSON 문자열로 변환하여 formData에 추가합니다
+        formData.append(
+          "data",
+          JSON.stringify({
+            coordinates: coordinates,
+            moving_avg_values: movingAvgValues,
+          })
+        );
 
-         if (!response.ok) {
-           throw new Error(`Server response error: ${response.status}`);
-         }
+        try {
+          // 서버에 이미지 전송
+          const response = await fetch(
+            "http://localhost:8000/analyze_posture",
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
 
-         // 서버 응답 처리
-         const data = await response.json();
-         console.log(data);
+          if (!response.ok) {
+            throw new Error(`Server response error: ${response.status}`);
+          }
 
-         setCoordinates(data.newCoordinates);
-         setMovingAvgValues(data.newMovingAvgValues);
-       } catch (error) {
-         console.error("Error sending the image to the server", error);
-       } finally {
-         setIsAnalysing(false); // 분석이 끝났음을 상태로 설정합니다
-       }
-     }, "image/jpeg");
-   } else {
-     setIsAnalysing(false); // 분석이 끝났음을 상태로 설정합니다
-   }
- };
+          // 서버 응답 처리
+          const data = await response.json();
+          console.log(data);
+
+          setCoordinates(data.coordinates);
+          setMovingAvgValues(data.moving_avg_values);
+        } catch (error) {
+          console.error("Error sending the image to the server", error);
+        } finally {
+          setIsAnalysing(false); // 분석이 끝났음을 상태로 설정합니다
+        }
+      }, "image/jpeg");
+    } else {
+      setIsAnalysing(false); // 분석이 끝났음을 상태로 설정합니다
+    }
+  };
 
   const startCamera = useCallback(() => {
     if (navigator.mediaDevices.getUserMedia && videoRef.current) {
