@@ -10,6 +10,37 @@ const Camera: React.FC = () => {
   // 기존 이동평균값과 새로운 이동평균값만 필요합니다
   const [coordinates, setCoordinates] = useState({});
   const [movingAvgValues, setMovingAvgValues] = useState({});
+  const [analyseIntervalId, setAnalyseIntervalId] = useState<number | null>(
+    null
+  );
+
+  const analyseIntervalIdRef = useRef(null);
+
+  useEffect(() => {
+    if (isAnalysing) {
+      if (analyseIntervalIdRef.current === null) {
+        analyseIntervalIdRef.current = window.setInterval(() => {
+          analysePosture();
+        }, 1000);
+      }
+    } else {
+      if (analyseIntervalIdRef.current !== null) {
+        clearInterval(analyseIntervalIdRef.current);
+        analyseIntervalIdRef.current = null;
+      }
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (analyseIntervalIdRef.current !== null) {
+        clearInterval(analyseIntervalIdRef.current);
+      }
+    };
+  }, [isAnalysing]); // Now we don't need to list analyseIntervalId as a dependency
+
+  const toggleAnalysePosture = useCallback(() => {
+    setIsAnalysing((prevIsAnalysing) => !prevIsAnalysing);
+  }, []);
 
   // 상태 업데이트 후에 실행되는 useEffect
   useEffect(() => {
@@ -17,8 +48,6 @@ const Camera: React.FC = () => {
   }, [coordinates, movingAvgValues]);
 
   const analysePosture = async () => {
-    setIsAnalysing(true);
-
     // 웹캠 이미지 캡처
     if (videoRef.current) {
       const canvas = document.createElement("canvas");
@@ -59,16 +88,38 @@ const Camera: React.FC = () => {
           const data = await response.json();
           console.log(data);
 
-          setCoordinates(data.coordinates);
-          setMovingAvgValues(data.moving_avg_values);
+          setCoordinates((prevCoordinates) => {
+            const updatedCoordinates = { ...prevCoordinates }; // 현재 좌표의 얕은 복사본을 만듭니다.
+            Object.keys(data.coordinates).forEach((key) => {
+              // 이전 상태에 키가 존재하지 않으면 빈 배열로 초기화합니다.
+              if (!updatedCoordinates[key]) updatedCoordinates[key] = [];
+              // 새 좌표 데이터를 기존 배열에 연결합니다.
+              updatedCoordinates[key] = updatedCoordinates[key].concat(
+                data.coordinates[key]
+              );
+            });
+            return updatedCoordinates;
+          });
+
+          setMovingAvgValues((prevMovingAvgValues) => {
+            const updatedMovingAvgValues = { ...prevMovingAvgValues }; // 현재 이동 평균의 얕은 복사본을 만듭니다.
+            Object.keys(data.moving_avg_values).forEach((key) => {
+              // 이전 상태에 키가 존재하지 않으면 빈 배열로 초기화합니다.
+              if (!updatedMovingAvgValues[key]) updatedMovingAvgValues[key] = [];
+              // 새 이동 평균 데이터를 기존 배열에 연결합니다.
+              updatedMovingAvgValues[key] = updatedMovingAvgValues[key].concat(
+                data.moving_avg_values[key]
+              );
+            });
+            return updatedMovingAvgValues;
+          });
+
         } catch (error) {
           console.error("Error sending the image to the server", error);
-        } finally {
-          setIsAnalysing(false); // 분석이 끝났음을 상태로 설정합니다
+          // 오류 발생 시 분석 중지
+          setIsAnalysing(false);
         }
       }, "image/jpeg");
-    } else {
-      setIsAnalysing(false); // 분석이 끝났음을 상태로 설정합니다
     }
   };
 
@@ -102,13 +153,12 @@ const Camera: React.FC = () => {
       )}
       {cameraStarted && (
         <button
-          onClick={analysePosture}
-          disabled={isAnalysing}
+          onClick={toggleAnalysePosture} // 변경된 함수를 사용합니다
           className={`bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mb-4 ${
-            isAnalysing ? "opacity-50 cursor-not-allowed" : ""
+            isAnalysing ? "opacity-50" : ""
           }`}
         >
-          {isAnalysing ? "Analysing..." : "🔍 Analyse Posture"}
+          {isAnalysing ? "Stop Analysing" : "Start Analysing"}
         </button>
       )}
       <div className="bg-black rounded-lg overflow-hidden shadow-lg">
