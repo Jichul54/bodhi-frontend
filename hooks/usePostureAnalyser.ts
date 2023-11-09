@@ -6,7 +6,7 @@ export const usePostureAnalyser = () => {
   const [image, setImage] = useState<string | null>(null);
 
   const handleStartAnalyse = () => {
-    setIsAnalysing(true);
+    setIsAnalysing((prev) => !prev);
     setImage(null);
   };
 

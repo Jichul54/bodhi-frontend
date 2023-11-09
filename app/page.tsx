@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { usePostureAnalyser } from "../hooks/usePostureAnalyser";
 import { startCamera, capturePhoto } from "../utils/cameraUtils";
 import { StartCameraButton } from "../components/StartCameraButton";
-import { StartAnalyseButton } from "../components/StartAnalyseButton";
+import { AnalyseToggleButton } from "../components/AnalyseToggleButton";
 import { CapturePhotoButton } from "../components/CapturePhotoButton";
 import { VideoDisplay } from "../components/VideoDisplay";
 
@@ -17,7 +17,7 @@ const AnalysePosture: React.FC = () => {
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-4xl font-bold mb-8">자세 분석</h1>
 
-      {/* 버튼 관리 */}
+      {/* 카메라 허가 */}
       {!cameraStarted && (
         <div className="w-full flex justify-evenly px-4 space-x-2">
           <StartCameraButton
@@ -26,21 +26,31 @@ const AnalysePosture: React.FC = () => {
         </div>
       )}
 
+      {/* 화면 캡쳐 -> 분석 시작 */}
       {cameraStarted && !isAnalysing && (
         <div className="w-full flex justify-evenly px-4 space-x-2">
           <CapturePhotoButton
             onCapturePhoto={() => capturePhoto(videoRef, setImage)}
           />
-          {image && <StartAnalyseButton onStartAnalyse={handleStartAnalyse} />}
+          {image && (
+            <AnalyseToggleButton
+              isAnalysing={isAnalysing}
+              onToggleAnalyse={handleStartAnalyse}
+            />
+          )}
         </div>
       )}
 
+      {/* 분석 중 -> 분석 중지 */}
       {cameraStarted && isAnalysing && (
         <div className="w-full flex justify-evenly px-4 space-x-2 items-center">
           <span className="text-m font-semibold">
             AI가 당신의 자세를 분석 중입니다...
           </span>
-          <StartAnalyseButton onStartAnalyse={handleStartAnalyse} />
+          <AnalyseToggleButton
+            isAnalysing={isAnalysing}
+            onToggleAnalyse={handleStartAnalyse}
+          />
         </div>
       )}
 
