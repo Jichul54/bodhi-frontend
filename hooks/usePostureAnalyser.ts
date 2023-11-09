@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+// usePostureAnalyser.ts
+import { useState } from "react";
 
-const usePostureAnalyser = (videoRef: React.RefObject<HTMLVideoElement>) => {
-  // ... 포즈 분석 로직
-  // 필요한 함수 및 상태 반환
+export const usePostureAnalyser = () => {
+  const [isAnalysing, setIsAnalysing] = useState(false);
+  const [image, setImage] = useState<string | null>(null);
+
+  const handleStartAnalyse = () => {
+    setIsAnalysing(true);
+    setImage(null);
+  };
+
+  // 여기에 더 많은 분석 로직을 추가할 수 있습니다.
+
+  return { isAnalysing, image, handleStartAnalyse, setImage };
 };
-
-export default usePostureAnalyser;
