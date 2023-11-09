@@ -2,15 +2,17 @@ import React from "react";
 
 interface AnalyseToggleButtonProps {
   isAnalysing: boolean;
-  onToggleAnalyse: () => void; // 분석을 시작하거나 중지하는 함수
+  handleStopAnalyse: () => void; // 분석을 시작
+  handleStartAnalyse: () => void; // 분석을 중지
 }
 
 export const AnalyseToggleButton: React.FC<AnalyseToggleButtonProps> = ({
   isAnalysing,
-  onToggleAnalyse,
+  handleStopAnalyse,handleStartAnalyse
+
 }) => (
   <button
-    onClick={onToggleAnalyse}
+    onClick={() => (isAnalysing ? handleStopAnalyse() : handleStartAnalyse())}
     className={`font-bold py-2 px-4 rounded-full mt-8 mb-8 transition-colors duration-200 ${
       isAnalysing
         ? "bg-red-500 hover:bg-red-700"

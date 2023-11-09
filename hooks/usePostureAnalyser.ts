@@ -1,16 +1,28 @@
-// usePostureAnalyser.ts
-import { useState } from "react";
+import React, { useState } from "react";
 
-export const usePostureAnalyser = () => {
+interface UsePostureAnalyserProps {
+  image: string | null;
+  setImage: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+export const usePostureAnalyser = ({
+  image,
+  setImage,
+}: UsePostureAnalyserProps) => {
   const [isAnalysing, setIsAnalysing] = useState(false);
-  const [image, setImage] = useState<string | null>(null);
 
   const handleStartAnalyse = () => {
-    setIsAnalysing((prev) => !prev);
+    if (image) {
+      setIsAnalysing(true);
+      // 분석 시작 로직
+    }
     setImage(null);
   };
 
-  // 여기에 더 많은 분석 로직을 추가할 수 있습니다.
+  const handleStopAnalyse = () => {
+    setIsAnalysing(false);
+    // 분석 중지 로직
+  };
 
-  return { isAnalysing, image, handleStartAnalyse, setImage };
+  return { isAnalysing, handleStartAnalyse, handleStopAnalyse };
 };

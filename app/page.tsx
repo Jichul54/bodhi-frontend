@@ -1,17 +1,18 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { usePostureAnalyser } from "../hooks/usePostureAnalyser";
-import { startCamera, capturePhoto } from "../utils/cameraUtils";
-import { StartCameraButton } from "../components/StartCameraButton";
-import { AnalyseToggleButton } from "../components/AnalyseToggleButton";
-import { CapturePhotoButton } from "../components/CapturePhotoButton";
-import { VideoDisplay } from "../components/VideoDisplay";
+import { useImageCapture } from "../hooks/useImageCapture";
+import { StartCameraButton } from "../components/elements/StartCameraButton";
+import { AnalyseToggleButton } from "../components/elements/AnalyseToggleButton";
+import { CapturePhotoButton } from "../components/elements/CapturePhotoButton";
+import { VideoDisplay } from "../components/elements/VideoDisplay";
 
 const AnalysePosture: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [cameraStarted, setCameraStarted] = useState(false);
-  const { isAnalysing, image, handleStartAnalyse, setImage } =
-    usePostureAnalyser();
+  const { image, setImage, startCamera, capturePhoto, cameraStarted } =
+    useImageCapture();
+  const { isAnalysing, handleStartAnalyse, handleStopAnalyse } =
+    usePostureAnalyser({ image, setImage });
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -20,22 +21,19 @@ const AnalysePosture: React.FC = () => {
       {/* 카메라 허가 */}
       {!cameraStarted && (
         <div className="w-full flex justify-evenly px-4 space-x-2">
-          <StartCameraButton
-            onStartCamera={() => startCamera(videoRef, setCameraStarted)}
-          />
+          <StartCameraButton onStartCamera={() => startCamera(videoRef)} />
         </div>
       )}
 
       {/* 화면 캡쳐 -> 분석 시작 */}
       {cameraStarted && !isAnalysing && (
         <div className="w-full flex justify-evenly px-4 space-x-2">
-          <CapturePhotoButton
-            onCapturePhoto={() => capturePhoto(videoRef, setImage)}
-          />
+          <CapturePhotoButton onCapturePhoto={() => capturePhoto(videoRef)} />
           {image && (
             <AnalyseToggleButton
               isAnalysing={isAnalysing}
-              onToggleAnalyse={handleStartAnalyse}
+              handleStopAnalyse={handleStopAnalyse}
+              handleStartAnalyse={handleStartAnalyse}
             />
           )}
         </div>
@@ -49,7 +47,8 @@ const AnalysePosture: React.FC = () => {
           </span>
           <AnalyseToggleButton
             isAnalysing={isAnalysing}
-            onToggleAnalyse={handleStartAnalyse}
+            handleStopAnalyse={handleStopAnalyse}
+            handleStartAnalyse={handleStartAnalyse}
           />
         </div>
       )}
