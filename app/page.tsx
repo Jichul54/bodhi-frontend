@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { usePostureAnalyser } from "../hooks/usePostureAnalyser";
 import { useImageCapture } from "../hooks/useImageCapture";
 import { StartCameraButton } from "../components/elements/StartCameraButton";
@@ -56,7 +56,15 @@ const AnalysePosture: React.FC = () => {
       {/* 캡쳐된 이미지를 표시합니다. */}
       {image && (
         <div className="mt-4">
-          <img src={image} alt="Captured" className="rounded-lg shadow-lg" />
+          <img
+            src={URL.createObjectURL(image)}
+            alt="Captured"
+            className="rounded-lg shadow-lg"
+            onLoad={(e) => {
+              // 이미지 로딩이 끝나면 해당 이미지의 Object URL을 해제합니다.
+              URL.revokeObjectURL((e.target as HTMLImageElement).src);
+            }}
+          />
         </div>
       )}
 

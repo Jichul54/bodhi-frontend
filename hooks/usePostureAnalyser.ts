@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 
 interface UsePostureAnalyserProps {
-  image: string | null;
-  setImage: React.Dispatch<React.SetStateAction<string | null>>;
+  image: Blob | null;
+  setImage: React.Dispatch<React.SetStateAction<Blob | null>>;
 }
 
 export const usePostureAnalyser = ({

@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 
 export const useImageCapture = () => {
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<Blob | null>(null);
   const [cameraStarted, setCameraStarted] = useState(false);
 
   const startCamera = useCallback(
@@ -22,21 +22,24 @@ export const useImageCapture = () => {
     []
   );
 
-  const capturePhoto = useCallback(
-    (videoRef: React.RefObject<HTMLVideoElement>) => {
-      if (videoRef.current) {
-        const video = videoRef.current;
-        const canvas = document.createElement("canvas");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext("2d");
-        if (ctx) {
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          const imageData = canvas.toDataURL("image/png");
-          setImage(imageData);
-        }
+const capturePhoto = useCallback(
+  (videoRef: React.RefObject<HTMLVideoElement>) => {
+    if (videoRef.current) {
+      const video = videoRef.current;
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            setImage(blob);
+          }
+        }, "image/png");
       }
-    },
+    }
+  },
     []
   );
 
