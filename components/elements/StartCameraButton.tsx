@@ -11,6 +11,6 @@ export const StartCameraButton: React.FC<StartCameraButtonProps> = ({
     onClick={onStartCamera}
     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full mt-8 mb-8"
   >
-    📷 Start Camera
+    📷 カメラを起動する
   </button>
 );

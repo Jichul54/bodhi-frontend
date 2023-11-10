@@ -42,16 +42,16 @@ const AnalysePosture: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-4xl font-bold mb-8">자세 분석</h1>
+      <h1 className="text-4xl font-bold mb-8">姿勢分析</h1>
 
-      {/* 카메라 허가 */}
+      {/* カメラ許可 */}
       {!cameraStarted && isGoodPosture && (
         <div className="w-full flex justify-evenly px-4 space-x-2">
           <StartCameraButton onStartCamera={() => startCamera(videoRef)} />
         </div>
       )}
 
-      {/* 화면 캡쳐 -> 분석 시작 */}
+      {/* 画面キャプチャ -> 分析開始 */}
       {cameraStarted && !isAnalysing && (
         <div className="w-full flex justify-evenly px-4 space-x-2">
           <CapturePhotoButton onCapturePhoto={() => capturePhoto(videoRef)} />
@@ -65,11 +65,11 @@ const AnalysePosture: React.FC = () => {
         </div>
       )}
 
-      {/* 분석 중 -> 분석 중지 */}
+      {/* 分析中 -> 分析停止 */}
       {cameraStarted && isAnalysing && (
         <div className="w-full flex justify-evenly px-4 space-x-2 items-center">
-          <span className="text-m font-semibold">
-            AI가 당신의 자세를 분석 중입니다...
+          <span className="text-lg font-semibold">
+            AIがあなたの姿勢を分析しています...
           </span>
           <AnalyseToggleButton
             isAnalysing={isAnalysing}
@@ -79,11 +79,11 @@ const AnalysePosture: React.FC = () => {
         </div>
       )}
 
-      {/* 자세가 교정 피드백 -> 카메라 다시 시작*/}
+      {/* ポストチャーが修正された場合 -> カメラ再開 */}
       {!isAnalysing && !cameraStarted && !isGoodPosture && (
         <div className="w-full flex justify-evenly px-4 space-x-2 items-center">
-          <span className="text-m font-semibold">
-            자세가 무너졌습니다. 다시 시작해주세요.
+          <span className="text-lg font-semibold">
+            姿勢が崩れました。姿勢を正しましょう！
           </span>
           <StartCameraButton
             onStartCamera={() => {
@@ -95,7 +95,7 @@ const AnalysePosture: React.FC = () => {
         </div>
       )}
 
-      {/* 캡쳐된 이미지를 표시합니다. */}
+      {/* キャプチャされた画像を表示 */}
       {!isAnalysing && image && (
         <div className="mt-4">
           <img
@@ -103,7 +103,7 @@ const AnalysePosture: React.FC = () => {
             alt="Captured"
             className="rounded-lg shadow-lg"
             onLoad={(e) => {
-              // 이미지 로딩이 끝나면 해당 이미지의 Object URL을 해제합니다.
+              // 画像の読み込みが完了したら、その画像のObject URLを解除します。
               URL.revokeObjectURL((e.target as HTMLImageElement).src);
             }}
           />

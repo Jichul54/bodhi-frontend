@@ -19,6 +19,6 @@ export const AnalyseToggleButton: React.FC<AnalyseToggleButtonProps> = ({
         : "bg-blue-500 hover:bg-blue-700"
     } text-white`}
   >
-    {isAnalysing ? "Stop Analysing" : "Analyse Posture"}
+    {isAnalysing ? "分析を中断する" : "姿勢を分析する"}
   </button>
 );

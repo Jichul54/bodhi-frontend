@@ -11,6 +11,6 @@ export const CapturePhotoButton: React.FC<CapturePhotoButtonProps> = ({
     onClick={onCapturePhoto}
     className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mt-8 mb-8"
   >
-    📸 Capture Photo
+    📸 キャプチャー写真を撮る
   </button>
 );
