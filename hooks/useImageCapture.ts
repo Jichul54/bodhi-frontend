@@ -23,7 +23,7 @@ export const useImageCapture = () => {
   );
 
 const capturePhoto = useCallback(
-  (videoRef: React.RefObject<HTMLVideoElement>) => {
+  async (videoRef: React.RefObject<HTMLVideoElement>) => {
     if (videoRef.current) {
       const video = videoRef.current;
       const canvas = document.createElement("canvas");
@@ -32,16 +32,23 @@ const capturePhoto = useCallback(
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob((blob) => {
-          if (blob) {
-            setImage(blob);
-          }
-        }, "image/png");
+        return new Promise<void>((resolve) => {
+          canvas.toBlob((blob) => {
+            if (blob) {
+              setImage(blob);
+            }
+            resolve(); // 이미지 설정 후 프라미스를 완료합니다.
+          }, "image/png");
+        });
       }
     }
+    // videoRef가 현재 상태가 아니거나 다른 조건으로 인해 조기에 함수가 종료되면,
+    // 타입 기대를 만족시키기 위해 여전히 해결된 프라미스를 반환해야 합니다.
+    return Promise.resolve();
   },
-    []
-  );
+  [setImage]
+);
+
 
   return { image, setImage, startCamera, capturePhoto, cameraStarted };
 };
