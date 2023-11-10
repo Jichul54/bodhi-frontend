@@ -3,6 +3,7 @@ import React, { useState, useCallback, useEffect } from "react";
 interface AnalysisState {
   coordinates: Record<string, any>;
   movingAvgValues: Record<string, any>;
+  isGoodPosture: boolean;
 }
 
 interface UsePostureAnalyserProps {
@@ -21,9 +22,11 @@ interface UsePostureAnalyserProps {
   ) => Promise<any>;
   updateAnalysisState: (
     newCoordinates: AnalysisState["coordinates"],
-    newMovingAvgValues: AnalysisState["movingAvgValues"]
+    newMovingAvgValues: AnalysisState["movingAvgValues"],
+    newIsGoodPosture: AnalysisState["isGoodPosture"]
   ) => void;
   resetAnalysisState: () => void;
+  isGoodPosture: boolean;
 }
 
 export const usePostureAnalyser = ({
@@ -50,9 +53,14 @@ export const usePostureAnalyser = ({
           movingAvgValues
         );
         console.log("서버 응답:", data);
+        console.log("자세:", data.posture_evaluation);
 
         // 서버로부터 받은 데이터를 상태에 반영합니다.
-        updateAnalysisState(data.coordinates, data.moving_avg_values);
+        updateAnalysisState(
+          data.coordinates,
+          data.moving_avg_values,
+          data.posture_evaluation
+        );
       } catch (error) {
         console.error("서버로 데이터를 보내는 중 에러 발생:", error);
       }

@@ -16,6 +16,7 @@ const AnalysePosture: React.FC = () => {
   const {
     coordinates,
     movingAvgValues,
+    isGoodPosture,
     updateAnalysisState,
     resetAnalysisState,
   } = usePostureAnalysisState();
@@ -28,6 +29,7 @@ const AnalysePosture: React.FC = () => {
       videoRef,
       coordinates,
       movingAvgValues,
+      isGoodPosture,
       sendPostureData,
       updateAnalysisState,
       resetAnalysisState,
