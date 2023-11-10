@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 
 interface UsePostureAnalyserProps {
   image: Blob | null;
   setImage: React.Dispatch<React.SetStateAction<Blob | null>>;
   capturePhoto: (videoRef: React.RefObject<HTMLVideoElement>) => Promise<void>;
+  videoRef: React.RefObject<HTMLVideoElement>;
 }
 
 export const usePostureAnalyser = ({
   image,
   setImage,
   capturePhoto,
+  videoRef,
 }: UsePostureAnalyserProps) => {
   const [isAnalysing, setIsAnalysing] = useState(false);
   const [coordinates, setCoordinates] = useState({});
@@ -47,6 +49,24 @@ export const usePostureAnalyser = ({
     }
   };
 
+  const performAnalysis = useCallback(async () => {
+    const capturedImage = await capturePhoto(videoRef); // 이미지 캡처
+    if (capturedImage != null) {
+      // 서버로 이미지와 데이터를 전송하고 결과를 받아옵니다.
+      try {
+        const data = await sendPostureData(
+          capturedImage,
+          coordinates,
+          movingAvgValues
+        );
+        console.log("서버 응답:", data);
+        setCoordinates(data.coordinates);
+        setMovingAvgValues(data.movingAvgValues);
+      } catch (error) {
+        console.error("서버로 데이터를 보내는 중 에러 발생:", error);
+      }
+    }
+  }, [capturePhoto, coordinates, movingAvgValues]);
 
 const handleStartAnalyse = async () => {
   if (image) {

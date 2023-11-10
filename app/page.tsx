@@ -12,7 +12,7 @@ const AnalysePosture: React.FC = () => {
   const { image, setImage, startCamera, capturePhoto, cameraStarted } =
     useImageCapture();
   const { isAnalysing, handleStartAnalyse, handleStopAnalyse } =
-    usePostureAnalyser({ image, setImage, capturePhoto });
+    usePostureAnalyser({ image, setImage, capturePhoto, videoRef });
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
