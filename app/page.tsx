@@ -2,6 +2,8 @@
 import React, { useRef } from "react";
 import { usePostureAnalyser } from "../hooks/usePostureAnalyser";
 import { useImageCapture } from "../hooks/useImageCapture";
+import { usePostureDataApi } from "../hooks/usePostureDataApi";
+import { usePostureAnalysisState } from "../hooks/usePostureAnalysisState";
 import { StartCameraButton } from "../components/elements/StartCameraButton";
 import { AnalyseToggleButton } from "../components/elements/AnalyseToggleButton";
 import { CapturePhotoButton } from "../components/elements/CapturePhotoButton";
@@ -11,8 +13,26 @@ const AnalysePosture: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { image, setImage, startCamera, capturePhoto, cameraStarted } =
     useImageCapture();
+  const {
+    coordinates,
+    movingAvgValues,
+    updateAnalysisState,
+    resetAnalysisState,
+  } = usePostureAnalysisState();
+  const { sendPostureData } = usePostureDataApi({ image, coordinates, movingAvgValues });
   const { isAnalysing, handleStartAnalyse, handleStopAnalyse } =
-    usePostureAnalyser({ image, setImage, capturePhoto, videoRef });
+    usePostureAnalyser({
+      image,
+      setImage,
+      capturePhoto,
+      videoRef,
+      coordinates,
+      movingAvgValues,
+      sendPostureData,
+      updateAnalysisState,
+      resetAnalysisState,
+    });
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
