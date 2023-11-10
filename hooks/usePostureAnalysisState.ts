@@ -31,7 +31,6 @@ export const usePostureAnalysisState = () => {
             newMovingAvgValues: AnalysisState["movingAvgValues"],
             newIsGoodPosture: AnalysisState["isGoodPosture"]
         ) => {
-            console.log("자세 " ,newIsGoodPosture);
             setCoordinates(newCoordinates);
             setMovingAvgValues(newMovingAvgValues);
             setIsGoodPosture(newIsGoodPosture);

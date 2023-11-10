@@ -27,6 +27,7 @@ interface UsePostureAnalyserProps {
   ) => void;
   resetAnalysisState: () => void;
   isGoodPosture: boolean;
+  stopCamera: (videoRef: React.RefObject<HTMLVideoElement>) => void;
 }
 
 export const usePostureAnalyser = ({
@@ -39,6 +40,7 @@ export const usePostureAnalyser = ({
   sendPostureData,
   updateAnalysisState,
   resetAnalysisState,
+  stopCamera,
 }: UsePostureAnalyserProps) => {
   const [isAnalysing, setIsAnalysing] = useState(false);
 
@@ -52,8 +54,6 @@ export const usePostureAnalyser = ({
           coordinates,
           movingAvgValues
         );
-        console.log("서버 응답:", data);
-        console.log("자세:", data.posture_evaluation);
 
         // 서버로부터 받은 데이터를 상태에 반영합니다.
         updateAnalysisState(
@@ -61,6 +61,11 @@ export const usePostureAnalyser = ({
           data.moving_avg_values,
           data.posture_evaluation
         );
+
+        // 자세가 불량할 때 handlePoorPosture 함수 호출
+        if (!data.posture_evaluation) {
+          handlePoorPosture();
+        }
       } catch (error) {
         console.error("서버로 데이터를 보내는 중 에러 발생:", error);
       }
@@ -72,22 +77,31 @@ export const usePostureAnalyser = ({
     if (isAnalysing) {
       const intervalId = setInterval(() => {
         performAnalysis();
-      }, 10000); // 10초마다 분석을 수행합니다.
+      }, 5000); // 5초마다 분석을 수행합니다.
 
       // 분석 중지 시 인터벌을 해제합니다.
       return () => clearInterval(intervalId);
     }
   }, [isAnalysing, performAnalysis]);
 
+  // Analyse Posture 버튼을 누르면 호출되는 함수
   const handleStartAnalyse = () => {
     setIsAnalysing(true);
   };
 
+  // Stop Analysing 버튼을 누르면 호출되는 함수
   const handleStopAnalyse = () => {
     setIsAnalysing(false);
     setImage(null);
     resetAnalysisState();
   };
+
+  // 자세가 좋지 않을 때 (isGoodPosture = False) 호출되는 함수
+  const handlePoorPosture = useCallback(() => {
+    // 자세가 불량할 때 실행할 로직
+    setIsAnalysing(false);
+    stopCamera(videoRef);
+  }, []);
 
   return { isAnalysing, handleStartAnalyse, handleStopAnalyse };
 };

@@ -22,6 +22,18 @@ export const useImageCapture = () => {
     []
   );
 
+  const stopCamera = useCallback(async (videoRef: React.RefObject<HTMLVideoElement>) => {
+    if (videoRef.current) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      const tracks = stream.getTracks();
+      tracks.forEach((track) => {
+        track.stop();
+      });
+      videoRef.current.srcObject = null;
+      setCameraStarted(false);
+    }
+  }, []);
+
   const capturePhoto = useCallback(
     async (
       videoRef: React.RefObject<HTMLVideoElement>
@@ -51,5 +63,5 @@ export const useImageCapture = () => {
     []
   );
 
-  return { image, setImage, startCamera, capturePhoto, cameraStarted };
+  return { image, setImage, startCamera, stopCamera, capturePhoto, cameraStarted };
 };

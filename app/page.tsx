@@ -11,8 +11,9 @@ import { VideoDisplay } from "../components/elements/VideoDisplay";
 
 const AnalysePosture: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { image, setImage, startCamera, capturePhoto, cameraStarted } =
+  const { image, setImage, startCamera, stopCamera, capturePhoto, cameraStarted } =
     useImageCapture();
+  
   const {
     coordinates,
     movingAvgValues,
@@ -20,7 +21,9 @@ const AnalysePosture: React.FC = () => {
     updateAnalysisState,
     resetAnalysisState,
   } = usePostureAnalysisState();
+  
   const { sendPostureData } = usePostureDataApi({ image, coordinates, movingAvgValues });
+
   const { isAnalysing, handleStartAnalyse, handleStopAnalyse } =
     usePostureAnalyser({
       image,
@@ -33,6 +36,7 @@ const AnalysePosture: React.FC = () => {
       sendPostureData,
       updateAnalysisState,
       resetAnalysisState,
+      stopCamera,
     });
 
 
@@ -40,8 +44,8 @@ const AnalysePosture: React.FC = () => {
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-4xl font-bold mb-8">자세 분석</h1>
 
-      {/* 카메라 허가 */}
-      {!cameraStarted && (
+      {/* 카메라 허가 */}
+      {!cameraStarted && isGoodPosture && (
         <div className="w-full flex justify-evenly px-4 space-x-2">
           <StartCameraButton onStartCamera={() => startCamera(videoRef)} />
         </div>
@@ -71,6 +75,22 @@ const AnalysePosture: React.FC = () => {
             isAnalysing={isAnalysing}
             handleStopAnalyse={handleStopAnalyse}
             handleStartAnalyse={handleStartAnalyse}
+          />
+        </div>
+      )}
+
+      {/* 자세가 교정 피드백 -> 카메라 다시 시작*/}
+      {!isAnalysing && !cameraStarted && !isGoodPosture && (
+        <div className="w-full flex justify-evenly px-4 space-x-2 items-center">
+          <span className="text-m font-semibold">
+            자세가 무너졌습니다. 다시 시작해주세요.
+          </span>
+          <StartCameraButton
+            onStartCamera={() => {
+              resetAnalysisState();
+              setImage(null);
+              startCamera(videoRef);
+            }}
           />
         </div>
       )}
