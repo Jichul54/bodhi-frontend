@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 interface UsePostureAnalyserProps {
   image: Blob | null;
@@ -20,7 +20,11 @@ export const usePostureAnalyser = ({
   const [movingAvgValues, setMovingAvgValues] = useState({});
 
   // 서버로 이미지와 관련 데이터를 전송하는 로직
-  const sendPostureData = async (image: string | Blob, coordinates: {}, movingAvgValues: {}) => {
+  const sendPostureData = async (
+    image: string | Blob,
+    coordinates: {},
+    movingAvgValues: {}
+  ) => {
     // 서버로 이미지와 관련 데이터를 전송하는 로직
     const formData = new FormData();
     formData.append("file", image); // Assuming image is already a Blob
@@ -70,30 +74,27 @@ export const usePostureAnalyser = ({
     }
   }, [capturePhoto, coordinates, movingAvgValues]);
 
-const handleStartAnalyse = async () => {
-  if (image) {
-    setIsAnalysing(true);
+  // 분석 시작
+  useEffect(() => {
+    if (isAnalysing) {
+      const intervalId = setInterval(() => {
+        performAnalysis();
+      }, 10000);
 
-    try {
-      // 서버로부터 응답을 받아옵니다.
-      const data = await sendPostureData(image, coordinates, movingAvgValues);
-
-      // 서버로부터 받은 응답을 처리합니다.
-      console.log("Server response:", data);
-      setCoordinates(data.coordinates);
-      setMovingAvgValues(data.moving_avg_values);
-    } catch (error) {
-      // 에러 핸들링 로직
-      console.error("Error sending data to the server:", error);
+      // 분석 중지 시 인터벌을 해제합니다.
+      return () => clearInterval(intervalId);
     }
+  }, [isAnalysing, performAnalysis]);
 
-  }
-};
+  const handleStartAnalyse = () => {
+    setIsAnalysing(true);
+  };
 
   const handleStopAnalyse = () => {
-    setImage(null);
     setIsAnalysing(false);
-    // 분석 중지 로직
+    setImage(null);
+    setCoordinates({});
+    setMovingAvgValues({});
   };
 
   return { isAnalysing, handleStartAnalyse, handleStopAnalyse };
