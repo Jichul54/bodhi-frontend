@@ -3,7 +3,9 @@ import React, { useState, useCallback } from "react";
 interface UsePostureAnalyserProps {
   image: Blob | null;
   setImage: React.Dispatch<React.SetStateAction<Blob | null>>;
-  capturePhoto: (videoRef: React.RefObject<HTMLVideoElement>) => Promise<void>;
+  capturePhoto: (
+    videoRef: React.RefObject<HTMLVideoElement>
+  ) => Promise<Blob | null>;
   videoRef: React.RefObject<HTMLVideoElement>;
 }
 
