@@ -54,7 +54,7 @@ const AnalysePosture: React.FC = () => {
       )}
 
       {/* 캡쳐된 이미지를 표시합니다. */}
-      {image && (
+      {!isAnalysing && image && (
         <div className="mt-4">
           <img
             src={URL.createObjectURL(image)}

@@ -13,6 +13,7 @@ export const usePostureAnalyser = ({
   const [coordinates, setCoordinates] = useState({});
   const [movingAvgValues, setMovingAvgValues] = useState({});
 
+  // 서버로 이미지와 관련 데이터를 전송하는 로직
   const sendPostureData = async (image: string | Blob, coordinates: {}, movingAvgValues: {}) => {
     // 서버로 이미지와 관련 데이터를 전송하는 로직
     const formData = new FormData();
@@ -25,6 +26,7 @@ export const usePostureAnalyser = ({
       })
     );
 
+    // 서버로부터 응답을 받아옵니다.
     try {
       const response = await fetch("http://localhost:8000/analyze_posture", {
         method: "POST",
@@ -51,6 +53,8 @@ const handleStartAnalyse = async () => {
     try {
       // 서버로부터 응답을 받아옵니다.
       const data = await sendPostureData(image, coordinates, movingAvgValues);
+
+      // 서버로부터 받은 응답을 처리합니다.
       console.log("Server response:", data);
       setCoordinates(data.coordinates);
       setMovingAvgValues(data.moving_avg_values);
